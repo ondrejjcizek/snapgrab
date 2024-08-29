@@ -1,0 +1,9 @@
+|-- .npmignore
+|-- LICENSE
+|-- README.md
+|-- package.json
+|-- snapgrab-0.9.0.tgz
+|-- src
+    |-- index.js
+    |-- utils
+        |-- mouseHandlers.js
