@@ -24,5 +24,6 @@
     "devDependencies": {
         "commit-and-tag-version": "^12.4.2",
         "vite": "^5.4.2"
-    }
+    },
+    "version": "1.1.15"
 }
