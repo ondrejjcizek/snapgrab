@@ -21,16 +21,8 @@ jobs:
             - name: Install dependencies
               run: npm install
 
-            - name: Configure Git
-              run: |
-                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
-                  git config --global user.name "github-actions[bot]"
-
-            - name: Release
+            - name: Run semantic-release
               env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-              run: npx release-it
-
-            - name: Push Tags
-              run: git push --follow-tags origin main
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }} # GitHub token for release
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # NPM token for publishing
+              run: npx semantic-release
