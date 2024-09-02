@@ -1,4 +1,4 @@
-name: Release
+name: Snapgrab Pipiline
 
 on:
     push:
@@ -16,7 +16,6 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: '20'
-                  registry-url: 'https://registry.npmjs.org/' # Ensure it uses the correct npm registry
 
             - name: Install dependencies
               run: npm install
@@ -31,11 +30,6 @@ jobs:
 
             - name: Commit and tag version
               run: npm run release
-
-            - name: Publish to npm
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-              run: npm publish --access public # Ensure the package is published with the correct access level
 
             - name: Push changes
               run: git push --follow-tags origin main
