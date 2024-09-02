@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import { execSync } from 'child_process';
 
 export default defineConfig({
   build: {
@@ -19,19 +18,4 @@ export default defineConfig({
       },
     },
   },
-  plugins: [
-    {
-      name: 'generate-types',
-      writeBundle() {
-        try {
-          // Run the TypeScript compiler to generate type definitions
-          execSync('npx tsc --project tsconfig.json', { stdio: 'inherit' });
-          console.log('TypeScript declaration files generated.');
-        } catch (error) {
-          console.error('Failed to generate types:', error.message);
-          throw error; // Re-throw the error to stop the build process
-        }
-      }
-    }
-  ]
 });
