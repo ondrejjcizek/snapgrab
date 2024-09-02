@@ -14,8 +14,25 @@
         [
             "@semantic-release/git",
             {
-                "assets": ["dist/**/*", "CHANGELOG.md", "package.json"],
+                "assets": ["dist/**/*", "CHANGELOG.md", "package.json", "README.md"],
                 "message": "chore(release): ${nextRelease.version} [skip ci]"
+            }
+        ],
+        [
+            "semantic-release-replace-plugin",
+            {
+                "replacements": [
+                    {
+                        "files": ["README.md"],
+                        "from": "snapgrab@\\d+\\.\\d+\\.\\d+",
+                        "to": "snapgrab@${nextRelease.version}"
+                    },
+                    {
+                        "files": ["README.md"],
+                        "from": "\"snapgrab\": \"\\^\\d+\\.\\d+\\.\\d+\"",
+                        "to": "\"snapgrab\": \"^${nextRelease.version}\""
+                    }
+                ]
             }
         ]
     ]
