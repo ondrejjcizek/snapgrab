@@ -16,6 +16,6 @@
             "*": ["types/*"]
         }
     },
-    "include": ["src/**/*.js", "src/index.d.ts"],
+    "include": ["src/**/*.ts"], // Include all TypeScript files
     "exclude": ["node_modules", "dist"]
 }
