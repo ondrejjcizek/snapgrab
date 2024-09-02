@@ -26,11 +26,6 @@
                         "files": ["README.md"],
                         "from": "snapgrab@\\d+\\.\\d+\\.\\d+",
                         "to": "snapgrab@${nextRelease.version}"
-                    },
-                    {
-                        "files": ["README.md"],
-                        "from": "\"snapgrab\": \"\\^\\d+\\.\\d+\\.\\d+\"",
-                        "to": "\"snapgrab\": \"^${nextRelease.version}\""
                     }
                 ]
             }
