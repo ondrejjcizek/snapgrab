@@ -1,4 +1,4 @@
-name: Snapgrab Pipiline
+name: Release
 
 on:
     push:
@@ -16,20 +16,12 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: '20'
+                  registry-url: 'https://registry.npmjs.org/'
 
             - name: Install dependencies
               run: npm install
 
-            - name: Configure Git
-              run: |
-                  git config --global user.name "github-actions[bot]"
-                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-            - name: Build the project
-              run: npm run build
-
-            - name: Commit and tag version
-              run: npm run release
-
-            - name: Push changes
-              run: git push --follow-tags origin main
+            - name: Release
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: npx release-it
