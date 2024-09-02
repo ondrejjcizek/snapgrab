@@ -55,7 +55,8 @@ export class Snapgrab {
 		this.updateButtonState()
 		this.handleHeight()
 		this.createDots()
-		this.element.classList.add('loaded')
+		this.detectCurrentSlide()
+
 		const slideCount = this.wrapper.children.length
 		if (slideCount > 1) {
 			this.wrapper.style.cursor = 'grab'
@@ -70,6 +71,8 @@ export class Snapgrab {
 				this.next.style.display = 'none'
 			}
 		}
+
+		this.element.classList.add('loaded')
 	}
 
 	preventImageDragging() {
@@ -120,14 +123,18 @@ export class Snapgrab {
 	}
 
 	detectCurrentSlide() {
-		const newSlide = Math.round(this.wrapper.scrollLeft / this.wrapper.children[0].offsetWidth)
+		const slideWidth = this.wrapper.children[0].offsetWidth
+		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth)
+		const newSlideStart = Math.round(this.wrapper.scrollLeft / slideWidth)
+		const newSlideEnd = newSlideStart + visibleSlides - 1
 	
-		if (newSlide !== this.state.currentSlide) {
-			this.state.currentSlide = newSlide
+		if (newSlideStart !== this.state.currentSlide) {
+			this.state.currentSlide = newSlideStart
+			this.state.visibleSlides = visibleSlides
 			this.updateAriaHidden()
 			this.updateButtonState()
-			this.updateActiveDot()
-			this.triggerSlideChangeEvent(newSlide)
+			this.updateActiveDot(newSlideStart, newSlideEnd)
+			this.triggerSlideChangeEvent(newSlideStart)
 		} else {
 			this.updateButtonState()
 		}
@@ -202,7 +209,7 @@ export class Snapgrab {
 
 	scrollSlides(direction) {
 		const slideWidth = this.wrapper.children[0]?.offsetWidth || 0
-		const newScrollLeft = this.wrapper.scrollLeft + direction * slideWidth
+		const newScrollLeft = this.wrapper.scrollLeft + direction * slideWidth // Change to scroll by one slide width
 	
 		this.updateButtonState()
 		this.wrapper.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
@@ -219,36 +226,52 @@ export class Snapgrab {
 
 	updateButtonState() {
 		const slideWidth = this.wrapper.children[0]?.offsetWidth || 0
-		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth) 
+		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth)
 		const totalSlides = this.wrapper.children.length
 		const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth
-
-		this.prev?.toggleAttribute('disabled', this.wrapper.scrollLeft <= 0)		
+	
+		this.prev?.toggleAttribute('disabled', this.wrapper.scrollLeft <= 0)        
 		this.next?.toggleAttribute('disabled', this.wrapper.scrollLeft >= maxScrollLeft)
 	}
 
 	createDots() {
 		if (!this.dots) return
-
-		const slideCount = this.wrapper.children.length
 	
+		const slideCount = this.wrapper.children.length
 		this.dots.innerHTML = ''
+	
 		for (let i = 0; i < slideCount; i++) {
 			const dot = document.createElement('button')
-			if (i === this.state.currentSlide) {
-				dot.classList.add('is-active')
-			}
+			dot.className = 'dot'
 			dot.addEventListener('click', () => this.goToSlide(i))
 			this.dots.appendChild(dot)
 		}
+	
+		const slideWidth = this.wrapper.children[0]?.offsetWidth || 0
+		const gap = parseFloat(window.getComputedStyle(this.wrapper).gap) || 0
+		const visibleSlides = Math.floor(this.wrapper.offsetWidth / (slideWidth + gap))
+		this.state.visibleSlides = visibleSlides
+	
+		console.log('Visible Slides on Init:', visibleSlides, 'Total Slides:', slideCount)
+	
+		this.updateActiveDot(0, visibleSlides - 1)
 	}
 
-	updateActiveDot() {
+	updateActiveDot(startIndex, endIndex) {
 		if (!this.dots) return
-		
+	
 		const dots = this.dots.querySelectorAll('button')
+		const totalDots = dots.length
+		const visibleSlides = this.state.visibleSlides
+	
 		dots.forEach((dot, index) => {
-			dot.classList.toggle('is-active', index === this.state.currentSlide)
+			let isActive = index >= startIndex && index <= endIndex
+	
+			if (endIndex >= totalDots - 1) {
+				isActive = index >= totalDots - visibleSlides
+			}
+	
+			dot.classList.toggle('is-active', isActive)
 		})
 	}
 
