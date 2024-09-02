@@ -44,8 +44,8 @@ export function onMouseMove(e, ref, state) {
 	const x = getEventX(e)
 	preventDefaultTouchEvent(e)
 
-	const walk = x - state.startX
-	ref.wrapper.scrollLeft = state.scrollLeft - walk * 3
+	const walk = (x - state.startX) * 1.5
+	ref.wrapper.scrollLeft = state.scrollLeft - walk
 
 	detectScrollBoundaries(ref, walk)
 }

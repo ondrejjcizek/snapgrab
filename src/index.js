@@ -1,4 +1,4 @@
-import { onMouseDown, onMouseLeave, onMouseMove, onMouseUp, onTouchMove } from './utils/mouseHandlers'
+import { onMouseDown, onMouseLeave, onMouseMove, onMouseUp, onTouchMove } from '../src/js/utils/mouseHandlers'
 
 export class Snapgrab {
 	constructor(element, options = {}) {
@@ -98,7 +98,7 @@ export class Snapgrab {
 			this.wrapper.style.cursor = 'grabbing'
 		}
 	}
-	
+
 	handleMouseUp(e) {
 		if (this.wrapper.children.length > 1) {
 			onMouseUp(this, this.state)
@@ -109,7 +109,7 @@ export class Snapgrab {
 			this.wrapper.style.cursor = 'grab'
 		}
 	}
-	
+
 	handleMouseLeave() {
 		if (this.wrapper.children.length > 1) {
 			onMouseLeave(this, this.state)
@@ -127,7 +127,7 @@ export class Snapgrab {
 		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth)
 		const newSlideStart = Math.round(this.wrapper.scrollLeft / slideWidth)
 		const newSlideEnd = newSlideStart + visibleSlides - 1
-	
+
 		if (newSlideStart !== this.state.currentSlide) {
 			this.state.currentSlide = newSlideStart
 			this.state.visibleSlides = visibleSlides
@@ -169,11 +169,11 @@ export class Snapgrab {
 	handleHeight() {
 		const currentSlideElement = this.wrapper.children[this.state.currentSlide]
 		if (!currentSlideElement) return
-	
+
 		const slideStyle = window.getComputedStyle(currentSlideElement)
 		const paddingTop = parseFloat(slideStyle.paddingTop) || 0
 		const paddingBottom = parseFloat(slideStyle.paddingBottom) || 0
-	
+
 		let totalHeight = Array.from(currentSlideElement.children).reduce((acc, child) => {
 			const childHeight = child.getBoundingClientRect().height
 			const style = window.getComputedStyle(child)
@@ -181,9 +181,9 @@ export class Snapgrab {
 			const marginBottom = parseFloat(style.marginBottom) || 0
 			return acc + childHeight + marginTop + marginBottom
 		}, 0)
-	
+
 		totalHeight += paddingTop + paddingBottom
-	
+
 		if (slideStyle.display.includes('flex')) {
 			const gap = parseFloat(slideStyle.rowGap) || 0
 			totalHeight += gap * (currentSlideElement.children.length - 1)
@@ -194,7 +194,7 @@ export class Snapgrab {
 			}, Array(slideStyle.gridTemplateColumns.split(' ').length).fill(0))
 			totalHeight = Math.max(...columnHeights)
 		}
-	
+
 		this.wrapper.style.height = `${totalHeight}px`
 		void this.wrapper.offsetHeight
 	}
@@ -209,8 +209,8 @@ export class Snapgrab {
 
 	scrollSlides(direction) {
 		const slideWidth = this.wrapper.children[0]?.offsetWidth || 0
-		const newScrollLeft = this.wrapper.scrollLeft + direction * slideWidth // Change to scroll by one slide width
-	
+		const newScrollLeft = this.wrapper.scrollLeft + direction * slideWidth
+
 		this.updateButtonState()
 		this.wrapper.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
 		this.detectCurrentSlide()
@@ -229,48 +229,48 @@ export class Snapgrab {
 		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth)
 		const totalSlides = this.wrapper.children.length
 		const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth
-	
-		this.prev?.toggleAttribute('disabled', this.wrapper.scrollLeft <= 0)        
+
+		this.prev?.toggleAttribute('disabled', this.wrapper.scrollLeft <= 0)
 		this.next?.toggleAttribute('disabled', this.wrapper.scrollLeft >= maxScrollLeft)
 	}
 
 	createDots() {
 		if (!this.dots) return
-	
+
 		const slideCount = this.wrapper.children.length
 		this.dots.innerHTML = ''
-	
+
 		for (let i = 0; i < slideCount; i++) {
 			const dot = document.createElement('button')
 			dot.className = 'dot'
 			dot.addEventListener('click', () => this.goToSlide(i))
 			this.dots.appendChild(dot)
 		}
-	
+
 		const slideWidth = this.wrapper.children[0]?.offsetWidth || 0
 		const gap = parseFloat(window.getComputedStyle(this.wrapper).gap) || 0
 		const visibleSlides = Math.floor(this.wrapper.offsetWidth / (slideWidth + gap))
 		this.state.visibleSlides = visibleSlides
-	
+
 		console.log('Visible Slides on Init:', visibleSlides, 'Total Slides:', slideCount)
-	
+
 		this.updateActiveDot(0, visibleSlides - 1)
 	}
 
 	updateActiveDot(startIndex, endIndex) {
 		if (!this.dots) return
-	
+
 		const dots = this.dots.querySelectorAll('button')
 		const totalDots = dots.length
 		const visibleSlides = this.state.visibleSlides
-	
+
 		dots.forEach((dot, index) => {
 			let isActive = index >= startIndex && index <= endIndex
-	
+
 			if (endIndex >= totalDots - 1) {
 				isActive = index >= totalDots - visibleSlides
 			}
-	
+
 			dot.classList.toggle('is-active', isActive)
 		})
 	}
