@@ -11,7 +11,7 @@ export default defineConfig({
       external: [],
       output: {
         globals: {
-          // Global variables for external dependencies
+          // Global variables for external dependencies//
         },
       },
     },
