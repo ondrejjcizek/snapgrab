@@ -2,12 +2,12 @@
     "name": "snapgrab",
     "version": "0.9.0",
     "description": "Snapgrab is a customizable scroll snapping component for web applications.",
-    "main": "src/index.js",
+    "main": "dist/index.min.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "release": "standard-version",
         "build:minify": "terser src/index.js -o dist/index.min.js --compress --mangle",
-        "build:gzip": "gzip-cli dist/index.min.js -o dist/index.min.js.gz",
+        "build:gzip": "npx gzip-cli dist/index.min.js -o dist/index.min.js.gz",
         "build": "npm run build:minify && npm run build:gzip"
     },
     "repository": {
