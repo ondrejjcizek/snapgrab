@@ -11,6 +11,7 @@ export default defineConfig({
     rollupOptions: {
       external: [], // List any dependencies you want to exclude from your bundle
       output: {
+        exports: 'named',
         globals: {
           // Define global variables for any external dependencies if necessary
         },

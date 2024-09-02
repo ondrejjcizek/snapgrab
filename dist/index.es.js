@@ -161,6 +161,8 @@ class E {
     this.wrapper.removeEventListener("mousedown", this.onMouseDown), this.wrapper.removeEventListener("mousemove", this.onMouseMove), this.wrapper.removeEventListener("mouseup", this.onMouseUp), this.wrapper.removeEventListener("mouseleave", this.onMouseLeave), this.wrapper.removeEventListener("scroll", this.onScroll);
   }
 }
+typeof module < "u" && module.exports && (module.exports = E);
 export {
-  E as Snapgrab
+  E as Snapgrab,
+  E as default
 };
