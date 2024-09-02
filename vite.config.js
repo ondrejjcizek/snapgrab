@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import dts from 'vite-plugin-dts'; // Import the plugin
 
 export default defineConfig({
   build: {
@@ -18,4 +19,10 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    dts({ // Add the plugin to generate type declarations
+      outputDir: 'dist', // Output directory for .d.ts files
+      insertTypesEntry: true, // Insert a `types` entry in package.json
+    }),
+  ],
 });
