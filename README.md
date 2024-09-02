@@ -20,7 +20,13 @@ To install Snapgrab, use npm:
 npm install snapgrab
 ```
 
-````
+<!-- Or add it to your `package.json`:
+
+```json
+"dependencies": {
+  "snapgrab": "^0.9.0"
+}
+``` -->
 
 ## Usage
 
@@ -39,7 +45,7 @@ Add the following HTML structure to your project:
     <button data-ref="next">Next</button>
     <div data-ref="dots"></div>
 </div>
-````
+```
 
 ### JavaScript
 
