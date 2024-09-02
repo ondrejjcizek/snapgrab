@@ -6,7 +6,9 @@
         },
         "git": {
             "requireCleanWorkingDir": false,
-            "tagName": "v${version}"
+            "tagName": "v${version}",
+            "release": true,
+            "token": "{{secrets.GH_TOKEN}}"
         }
     }
 }
