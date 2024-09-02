@@ -1,0 +1,12 @@
+{
+    "release-it": {
+        "npm": {
+            "publish": true,
+            "registry": "https://registry.npmjs.org/"
+        },
+        "git": {
+            "requireCleanWorkingDir": false,
+            "tagName": "v${version}"
+        }
+    }
+}
