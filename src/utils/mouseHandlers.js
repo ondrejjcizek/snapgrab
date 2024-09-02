@@ -16,9 +16,9 @@ function preventDefaultTouchEvent(e) {
 function detectScrollBoundaries(ref, walk) {
 	const maxScrollLeft = ref.wrapper.scrollWidth - ref.wrapper.clientWidth
 
-	if (walk > 0 && ref.wrapper.scrollLeft <= 0) {
+	if (ref.wrapper.scrollLeft <= 0) {
 		triggerBoundaryClass(ref.wrapper, 'no-more-left')
-	} else if (walk < 0 && ref.wrapper.scrollLeft >= maxScrollLeft) {
+	} else if (ref.wrapper.scrollLeft >= maxScrollLeft) {
 		triggerBoundaryClass(ref.wrapper, 'no-more-right')
 	}
 }
@@ -26,6 +26,10 @@ function detectScrollBoundaries(ref, walk) {
 function triggerBoundaryClass(wrapper, className) {
 	wrapper.classList.add(className)
 	setTimeout(() => wrapper.classList.remove(className), 500)
+}
+
+function clampScrollPosition(scrollLeft, min, max) {
+	return Math.max(min, Math.min(scrollLeft, max))
 }
 
 export function onMouseDown(e, ref, state) {
@@ -45,7 +49,11 @@ export function onMouseMove(e, ref, state) {
 	preventDefaultTouchEvent(e)
 
 	const walk = (x - state.startX) * 1.5
-	ref.wrapper.scrollLeft = state.scrollLeft - walk
+	const maxScrollLeft = ref.wrapper.scrollWidth - ref.wrapper.clientWidth
+	let newScrollLeft = state.scrollLeft - walk
+
+	newScrollLeft = clampScrollPosition(newScrollLeft, 0, maxScrollLeft)
+	ref.wrapper.scrollLeft = newScrollLeft
 
 	detectScrollBoundaries(ref, walk)
 }
@@ -60,13 +68,24 @@ export function onMouseLeave(ref, state) {
 	}
 }
 
+export function onTouchStart(e, ref, state) {
+	e.preventDefault()
+}
+
 export function onTouchMove(e, ref, state) {
 	if (!state.isDragging) return
 
 	const x = getEventX(e) - ref.wrapper.offsetLeft
-	const walk = (x - state.startX) * 3
+	const walk = (x - state.startX) * 1.5
+	const maxScrollLeft = ref.wrapper.scrollWidth - ref.wrapper.clientWidth
+	let newScrollLeft = state.scrollLeft - walk
 
-	ref.wrapper.scrollLeft = state.scrollLeft - walk
+	newScrollLeft = clampScrollPosition(newScrollLeft, 0, maxScrollLeft)
+	ref.wrapper.scrollLeft = newScrollLeft
 
 	detectScrollBoundaries(ref, walk)
+}
+
+export function onTouchEnd(e, ref, state) {
+	e.preventDefault()
 }
