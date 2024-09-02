@@ -1,4 +1,4 @@
-import { onMouseDown, onMouseLeave, onMouseMove, onMouseUp, onTouchMove } from './utils/mouseHandlers'
+import { onMouseDown, onMouseLeave, onMouseMove, onMouseUp, onTouchMove } from './utils/mouseHandlers';
 
 export class Snapgrab {
 	constructor(element, options = {}) {
