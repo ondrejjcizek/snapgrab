@@ -9,7 +9,7 @@
         "dev": "vite",
         "build": "vite build",
         "preview": "vite preview",
-        "release": "standard-version",
+        "release": "semantic-release",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
