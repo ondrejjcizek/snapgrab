@@ -5,7 +5,12 @@
     "main": "dist/snapgrab.cjs.js",
     "module": "dist/snapgrab.es.js",
     "browser": "dist/snapgrab.umd.js",
-    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/snapgrab.es.js",
+            "require": "./dist/snapgrab.cjs.js"
+        }
+    },
     "scripts": {
         "dev": "vite",
         "build": "vite build",
