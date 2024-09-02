@@ -5,7 +5,10 @@
     "main": "src/index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "release": "standard-version"
+        "release": "standard-version",
+        "build:minify": "terser src/index.js -o dist/index.min.js --compress --mangle",
+        "build:gzip": "gzip-cli dist/index.min.js -o dist/index.min.js.gz",
+        "build": "npm run build:minify && npm run build:gzip"
     },
     "repository": {
         "type": "git",
@@ -21,7 +24,9 @@
         "@semantic-release/changelog": "^6.0.3",
         "@semantic-release/git": "^10.0.1",
         "@semantic-release/npm": "^12.0.1",
+        "gzip-cli": "^1.2.0",
         "semantic-release": "^24.1.0",
-        "standard-version": "^9.5.0"
+        "standard-version": "^9.5.0",
+        "terser": "^5.31.6"
     }
 }
