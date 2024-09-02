@@ -12,7 +12,7 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v3
 
-            - name: Setup Node.js
+            - name: Set up Node.js
               uses: actions/setup-node@v3
               with:
                   node-version: '20'
@@ -20,8 +20,16 @@ jobs:
             - name: Install dependencies
               run: npm install
 
-            - name: Run semantic-release
+            - name: Build the project
+              run: npm run build
+
+            - name: Commit and tag version
+              run: npm run release
+
+            - name: Publish to npm
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-              run: npx semantic-release
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+              run: npm publish
+
+            - name: Push changes
+              run: git push --follow-tags origin main
