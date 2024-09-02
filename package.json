@@ -2,15 +2,9 @@
     "name": "snapgrab",
     "description": "Snapgrab is a customizable scroll snapping component for web applications.",
     "version": "1.1.23",
-    "main": "dist/snapgrab.cjs.js",
-    "module": "dist/snapgrab.es.js",
-    "browser": "dist/snapgrab.umd.js",
-    "exports": {
-        ".": {
-            "import": "./dist/snapgrab.es.js",
-            "require": "./dist/snapgrab.cjs.js"
-        }
-    },
+    "main": "dist/index.cjs.js",
+    "module": "dist/index.es.js",
+    "browser": "dist/index.umd.js",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
