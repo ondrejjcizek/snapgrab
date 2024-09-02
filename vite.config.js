@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite';
+import { execSync } from 'child_process';
 
 export default defineConfig({
   build: {
     lib: {
-      entry: 'src/index.js', // Replace with the path to your entry file
+      entry: 'src/index.js', // Path to your entry file
       name: 'Snapgrab',
       fileName: (format) => `index.${format}.js`,
       formats: ['es', 'cjs', 'umd'], // Generate ES module, CommonJS, and UMD formats
@@ -18,4 +19,19 @@ export default defineConfig({
       },
     },
   },
+  plugins: [
+    {
+      name: 'generate-types',
+      writeBundle() {
+        try {
+          // Run the TypeScript compiler to generate type definitions
+          execSync('npx tsc --project tsconfig.json', { stdio: 'inherit' });
+          console.log('TypeScript declaration files generated.');
+        } catch (error) {
+          console.error('Failed to generate types:', error.message);
+          throw error; // Re-throw the error to stop the build process
+        }
+      }
+    }
+  ]
 });
