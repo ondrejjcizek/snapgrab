@@ -21,6 +21,11 @@ jobs:
             - name: Install dependencies
               run: npm install
 
+            - name: Configure Git
+              run: |
+                  git config --global user.email "github-actions[bot]@users.noreply.github.com"
+                  git config --global user.name "github-actions[bot]"
+
             - name: Release
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
