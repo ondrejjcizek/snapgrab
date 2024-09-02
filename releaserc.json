@@ -17,8 +17,8 @@
                 "replacements": [
                     {
                         "files": ["README.md"],
-                        "from": "snapgrab@\\d+\\.\\d+\\.\\d+", // Matches "snapgrab@0.0.9"
-                        "to": "snapgrab@${nextRelease.version}", // Replaces with new version
+                        "from": "snapgrab@\\d+\\.\\d+\\.\\d+",
+                        "to": "snapgrab@${nextRelease.version}",
                         "results": [
                             {
                                 "file": "README.md",
@@ -31,8 +31,8 @@
                     },
                     {
                         "files": ["README.md"],
-                        "from": "\"snapgrab\": \"\\^\\d+\\.\\d+\\.\\d+\"", // Matches "snapgrab": "^0.0.9"
-                        "to": "\"snapgrab\": \"^${nextRelease.version}\"", // Replaces with new version
+                        "from": "\"snapgrab\": \"\\^\\d+\\.\\d+\\.\\d+\"",
+                        "to": "\"snapgrab\": \"^${nextRelease.version}\"",
                         "results": [
                             {
                                 "file": "README.md",
