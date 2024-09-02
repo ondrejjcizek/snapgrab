@@ -16,6 +16,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: '20'
+                  registry-url: 'https://registry.npmjs.org/' # Ensure it uses the correct npm registry
 
             - name: Install dependencies
               run: npm install
@@ -34,7 +35,7 @@ jobs:
             - name: Publish to npm
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-              run: npm publish
+              run: npm publish --access public # Ensure the package is published with the correct access level
 
             - name: Push changes
               run: git push --follow-tags origin main
