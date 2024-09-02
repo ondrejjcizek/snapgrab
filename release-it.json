@@ -4,11 +4,11 @@
             "publish": true,
             "registry": "https://registry.npmjs.org/"
         },
-        "git": {
-            "requireCleanWorkingDir": false,
-            "tagName": "v${version}",
+        "github": {
             "release": true,
-            "token": "{{secrets.GH_TOKEN}}"
+            "releaseName": "Release ${version}",
+            "token": "{{secrets.GITHUB_TOKEN}}",
+            "assets": ["dist/*"]
         }
     }
 }
