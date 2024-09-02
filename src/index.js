@@ -382,11 +382,3 @@ export class Snapgrab {
 		// More event listeners could be removed here as needed.
 	}
 }
-
-// Export Snapgrab as the default export for both ES Modules and CommonJS
-export default Snapgrab;
-
-// CommonJS export for compatibility with Node.js environments
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = Snapgrab;
-}
