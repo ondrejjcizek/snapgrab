@@ -1,6 +1,6 @@
 # Snapgrab
 
-**Snapgrab** is a customizable scroll snapping component for web applications. It allows users to navigate through slides smoothly with mouse and touch interactions, offering an enhanced scrolling experience.
+**Snapgrab** is a customizable and lightweight JavaScript slider component that provides an easy way to create dynamic and interactive content sliders on your website.
 
 ## Table of Contents
 
@@ -12,21 +12,25 @@
 -   [Contributing](#contributing)
 -   [License](#license)
 
+## Demo
+
+Check out the live demo of Snapgrab in action:
+[Snapgrab Demo](https://snapgrab-docs.vercel.app/)
+
+## Features
+
+-   Autoplay functionality with configurable intervals
+-   Responsive design for various screen sizes
+-   Easy-to-customize navigation and pagination
+-   Supports touch and mouse interactions
+-   Dynamic height adjustment based on visible slides
+
 ## Installation
 
 To install Snapgrab, use npm:
 
-```bash
+````bash
 npm install snapgrab
-```
-
-<!-- Or add it to your `package.json`:
-
-```json
-"dependencies": {
-  "snapgrab": "^0.9.0"
-}
-``` -->
 
 ## Usage
 
@@ -45,7 +49,7 @@ Add the following HTML structure to your project:
     <button data-ref="next">Next</button>
     <div data-ref="dots"></div>
 </div>
-```
+````
 
 ### JavaScript
 
@@ -54,13 +58,12 @@ Import and initialize Snapgrab in your JavaScript file:
 ```javascript
 import { Snapgrab } from 'snapgrab'
 
-const snapgrab = new Snapgrab(document.getElementById('snapgrab'), {
-    onSlideChange: (index) => {
-        console.log('Slide changed to:', index)
-    },
+// Initialize the slider
+const slider = new Snapgrab(document.querySelector('.your-slider-element'), {
+    autoplay: 3000, // Autoplay interval in milliseconds
+    onSlideChange: (currentSlide) => console.log('Slide changed to:', currentSlide),
 })
-
-snapgrab.init()
+slider.init()
 ```
 
 ### CSS
