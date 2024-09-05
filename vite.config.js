@@ -1,28 +1,21 @@
 import { defineConfig } from 'vite';
-import dts from 'vite-plugin-dts'; // Import the plugin
 
 export default defineConfig({
   build: {
     lib: {
-      entry: 'src/index.ts', // Path to your entry file
+      entry: 'src/index.js',
       name: 'Snapgrab',
       fileName: (format) => `index.${format}.js`,
-      formats: ['es', 'cjs', 'umd'], // Generate ES module, CommonJS, and UMD formats
+      formats: ['es', 'cjs', 'umd'],
     },
     rollupOptions: {
-      external: [], // List any dependencies you want to exclude from your bundle
+      external: [],
       output: {
         exports: 'named',
         globals: {
-          // Define global variables for any external dependencies if necessary
+          //
         },
       },
     },
   },
-  plugins: [
-    dts({ // Add the plugin to generate type declarations
-      outputDir: 'dist', // Output directory for .d.ts files
-      insertTypesEntry: true, // Insert a `types` entry in package.json
-    }),
-  ],
 });
