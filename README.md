@@ -4,11 +4,13 @@
 
 ## Table of Contents
 
+-   [Demo](#demo)
+-   [Features](#features)
 -   [Installation](#installation)
 -   [Usage](#usage)
--   [Options](#options)
--   [API](#api)
--   [Events](#events)
+-   [Configuring Autoplay](#configuring-autoplay)
+-   [CSS Setup](#css-setup)
+-   [Documentation](#documentation)
 -   [Contributing](#contributing)
 -   [License](#license)
 
@@ -29,8 +31,9 @@ Check out the live demo of Snapgrab in action:
 
 To install Snapgrab, use npm:
 
-````bash
+```bash
 npm install snapgrab
+```
 
 ## Usage
 
@@ -49,7 +52,7 @@ Add the following HTML structure to your project:
     <button data-ref="next">Next</button>
     <div data-ref="dots"></div>
 </div>
-````
+```
 
 ### JavaScript
 
