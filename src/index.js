@@ -10,6 +10,7 @@ export class Snapgrab {
      * @param {HTMLElement} element - The DOM element to attach the slider to.
      * @param {Object} [options={}] - Configuration options for the slider.
      * @param {number} [options.autoplay] - Interval in milliseconds for autoplay. If not provided, autoplay is disabled.
+	 * @param {boolean} [options.autoplayStopOnInteraction] - Whether to stop autoplay on any user interaction.
      * @param {function} [options.onSlideChange] - Callback function to be called when the slide changes.
      */
 	constructor(element, options = {}) {
@@ -27,6 +28,7 @@ export class Snapgrab {
 		this.isVerticalScroll = false
 
 		this.options = options
+		this.hasUserInteracted = false // Flag to track user interactions
 
 		this.state = {
 			isDragging: this.isDragging,
@@ -42,59 +44,64 @@ export class Snapgrab {
 	}
 
 	/**
-     * Binds event handlers to the necessary DOM elements.
-     */
+	 * Binds event handlers to the necessary DOM elements.
+	 */
 	bindEvents() {
-		this.onMouseDown = (e) => this.handleMouseDown(e)
-		this.onMouseMove = (e) => this.handleMouseMove(e)
-		this.onMouseUp = (e) => this.handleMouseUp(e)
-		this.onMouseLeave = () => this.handleMouseLeave()
-		this.onScroll = this.debounce(() => this.detectCurrentSlide(), 100)
-		this.onTouchMove = (e) => onTouchMove(e, this, this.state)
+		const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
 
+		this.onMouseDown = (e) => {
+			this.handleMouseDown(e)
+			this.stopAutoplayIfNeeded() // Stop autoplay on interaction
+		}
+		this.onMouseMove = (e) => this.handleMouseMove(e)
+		this.onMouseUp = (e) => {
+			this.handleMouseUp(e)
+			this.stopAutoplayIfNeeded() // Stop autoplay on interaction
+		}
+		this.onMouseLeave = () => {
+			this.handleMouseLeave()
+			this.stopAutoplayIfNeeded() // Stop autoplay on interaction
+		}
+		this.onScroll = this.debounce(() => this.detectCurrentSlide(), 100)
+
+		// Attach mouse events for non-touch devices
 		this.wrapper.addEventListener('mousedown', this.onMouseDown)
 		this.wrapper.addEventListener('mousemove', this.onMouseMove)
 		this.wrapper.addEventListener('mouseup', this.onMouseUp)
 		this.wrapper.addEventListener('mouseleave', this.onMouseLeave)
 		this.wrapper.addEventListener('scroll', this.onScroll)
-		this.wrapper.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: true })
-		this.wrapper.addEventListener('touchmove', this.onTouchMove, { passive: true })
-		this.wrapper.addEventListener('touchend', (e) => this.handleMouseUp(e))
+
+		// Attach touch events for all devices
+		this.wrapper.addEventListener('touchstart', (e) => {
+			this.onTouchStart(e)
+			this.stopAutoplayIfNeeded() // Stop autoplay on interaction
+		}, { passive: true })
+		this.wrapper.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: true })
+		this.wrapper.addEventListener('touchend', (e) => {
+			this.onTouchEnd(e)
+			this.stopAutoplayIfNeeded() // Stop autoplay on interaction
+		})
 
 		if (this.prev) {
-			this.prev.addEventListener('click', () => this.handlePrevClick())
+			this.prev.addEventListener('click', () => {
+				this.handlePrevClick()
+				this.stopAutoplayIfNeeded() // Stop autoplay on interaction
+			})
 		}
 
 		if (this.next) {
-			this.next.addEventListener('click', () => this.handleNextClick())
+			this.next.addEventListener('click', () => {
+				this.handleNextClick()
+				this.stopAutoplayIfNeeded() // Stop autoplay on interaction
+			})
 		}
 
 		this.wrapper.addEventListener('slideChange', () => {
 			console.log('Slide changed, updating height')
 			this.handleHeight()
 		})
-		
-		window.addEventListener('resize', this.handleHeight())
 
-		this.wrapper.addEventListener('mouseover', () => this.pauseAutoplay())
-		if (this.prev) {
-			this.prev.addEventListener('mouseover', () => this.pauseAutoplay())
-		}
-
-		if (this.next) {
-			this.next.addEventListener('mouseover', () => this.pauseAutoplay())
-		}
-
-		this.wrapper.addEventListener('mouseout', () => this.resumeAutoplay())
-		if (this.prev) {
-			this.prev.addEventListener('mouseout', () => this.resumeAutoplay())
-		}
-
-		if (this.next) {
-			this.next.addEventListener('mouseout', () => this.resumeAutoplay())
-		}
-
-		this.wrapper.addEventListener('transitionend', () => this.handleHeight())
+		window.addEventListener('resize', () => this.handleHeight())
 	}
 
 	/**
@@ -107,7 +114,7 @@ export class Snapgrab {
 		this.createDots()
 		this.detectCurrentSlide()
 
-		this.handleHeight() // Ensure height 
+		this.handleHeight() // Ensure height is adjusted
 
 		const slideCount = this.wrapper.children.length
 		if (slideCount > 1) {
@@ -118,26 +125,37 @@ export class Snapgrab {
 			if (this.next) this.next.style.display = 'none'
 		}
 
-		this.element.classList.add('loaded')
-
 		this.startAutoplay()
 	}
 
 	/**
-     * Starts the autoplay functionality for the slider.
-     */
+	 * Starts the autoplay functionality for the slider.
+	 */
 	startAutoplay() {
 		const autoplayInterval = this.options.autoplay
-		if (!autoplayInterval) {
+		if (!autoplayInterval || this.hasUserInteracted) {
+			// Only start autoplay if enabled and no user interaction has happened
 			return
 		}
-	
+
 		const autoplayFunction = () => {
-			this.handleNextClick()
-			this.handleHeight() // Ensure height is adjusted after each automatic slide change
+			if (!this.hasUserInteracted) { // Check again before each iteration
+				this.handleNextClick()
+				this.handleHeight() // Ensure height is adjusted after each automatic slide change
+			}
 		}
-	
+
 		this.autoplay = new runTimeout(autoplayFunction, autoplayInterval, true)
+	}
+
+	/**
+	 * Stops the autoplay.
+	 */
+	stopAutoplay() {
+		if (this.autoplay) {
+			this.autoplay.destroy() // Ensure autoplay is completely stopped
+			this.autoplay = null
+		}
 	}
 
 	/**
@@ -159,6 +177,16 @@ export class Snapgrab {
 	}
 
 	/**
+	 * Stops the autoplay if necessary.
+	 */
+	stopAutoplayIfNeeded() {
+		if (this.options.autoplayStopOnInteraction && !this.hasUserInteracted) {
+			this.hasUserInteracted = true
+			this.stopAutoplay() // Stop autoplay on first user interaction
+		}
+	}
+
+	/**
      * Prevents images inside the slider from being draggable.
      */
 	preventImageDragging() {
@@ -169,19 +197,17 @@ export class Snapgrab {
 		})
 	}
 
-	/**
+	  /**
      * Handles touch start event.
      * @param {TouchEvent} e - The touch event.
      */
-	onTouchStart(e) {
+	  onTouchStart(e) {
 		this.isDragging = true
 		this.startX = e.touches[0].pageX - this.wrapper.offsetLeft
 		this.scrollLeft = this.wrapper.scrollLeft
 		this.startY = e.touches[0].pageY
 		this.isVerticalScroll = false
-		if (this.autoplay) {
-			this.autoplay.reset()
-		}
+		this.handleUserInteraction() // Check and handle user interaction
 	}
 
 	/**
@@ -193,6 +219,7 @@ export class Snapgrab {
 			onMouseDown(e, this, this.state)
 			this.isScrolling = false
 			this.wrapper.style.cursor = 'grabbing'
+			this.handleUserInteraction() // Check and handle user interaction
 		}
 	}
 
@@ -293,41 +320,48 @@ export class Snapgrab {
 	triggerSlideChangeEvent(slideIndex) {
 		const event = new CustomEvent('slideChange', { detail: { slideIndex } })
 		this.wrapper.dispatchEvent(event) // Dispatch the event to notify other parts of the code
-	
+    
 		// Ensure the callback is also called if provided
 		if (this.options.onSlideChange) {
 			this.options.onSlideChange(slideIndex)
 		}
 	}
-	
+    
 	/**
- * Handles the slider height dynamically.
- */
+	 * Handles the slider height dynamically, recalculating the height based on the current visible slides.
+	 */
 	handleHeight() {
+		if (!this.options.autoheight) return // Check if autoheight is enabled
+		
 		const slides = Array.from(this.wrapper.children)
 		if (!slides.length) return
-
+	
 		let maxHeight = 0
-
+	
+		// Ensure all slides are temporarily visible to calculate their heights correctly
+		slides.forEach((slide) => {
+			slide.style.display = '' // Reset any display property that might hide the slide
+		})
+	
 		slides.forEach((slide) => {
 			const slideStyle = window.getComputedStyle(slide)
 			const isHidden = slide.getAttribute('aria-hidden') === 'true' // Check if the slide is hidden
-
+	
 			if (!isHidden) { // Only consider slides that are not hidden
 				const paddingTop = parseFloat(slideStyle.paddingTop) || 0
 				const paddingBottom = parseFloat(slideStyle.paddingBottom) || 0
-
+	
 				let slideHeight = 0
-
+	
 				if (slideStyle.display.includes('grid')) {
 					const columns = slideStyle.gridTemplateColumns.split(' ').length
 					const columnHeights = Array(columns).fill(0)
-
+	
 					Array.from(slide.children).forEach((child, index) => {
 						const childHeight = child.getBoundingClientRect().height
 						columnHeights[index % columns] += childHeight
 					})
-
+	
 					slideHeight = Math.max(...columnHeights)
 				} else {
 					slideHeight = Array.from(slide.children).reduce((acc, child) => {
@@ -337,23 +371,24 @@ export class Snapgrab {
 						const marginBottom = parseFloat(style.marginBottom) || 0
 						return acc + childHeight + marginTop + marginBottom
 					}, 0)
-
+	
 					slideHeight += paddingTop + paddingBottom
-
+	
 					if (slideStyle.display.includes('flex')) {
 						const gap = parseFloat(slideStyle.rowGap) || 0
 						slideHeight += gap * (slide.children.length - 1)
 					}
 				}
-
+	
 				maxHeight = Math.max(maxHeight, slideHeight)
 			}
 		})
-
+	
 		// Update the wrapper height
 		if (maxHeight > 0) {
 			this.wrapper.style.height = `${maxHeight}px`
-			void this.wrapper.offsetHeight // Force reflow to apply the new height
+			// Force reflow to apply the new height
+			this.wrapper.style.height = `${maxHeight}px`
 		} else {
 			console.warn('Max height calculation failed; check your slide content and layout styles.')
 		}
@@ -363,27 +398,39 @@ export class Snapgrab {
      * Handles the click event for the previous button.
      */
 	handlePrevClick() {
+		this.handleUserInteraction() // Check and handle user interaction
 		this.scrollSlides(-1)
+		this.handleHeight() // Ensure recalculation after sliding
 	}
 
 	/**
      * Handles the click event for the next button.
      */
 	handleNextClick() {
-		var totalSlides = this.wrapper.children.length
-		var slideWidth = this.wrapper.children[0].offsetWidth || 0
-		var visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth) // Calculate the number of visible slides dynamically
-		var maxScrollLeft = (totalSlides - visibleSlides) * slideWidth
-	
-		// Check if we have reached the end and need to loop back to the start
+		this.handleUserInteraction() // Check and handle user interaction
+		const totalSlides = this.wrapper.children.length
+		const slideWidth = this.wrapper.children[0].offsetWidth || 0
+		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth)
+		const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth
+
 		if (this.wrapper.scrollLeft >= maxScrollLeft) {
-			this.goToSlide(0) // Reset to the first slide
-			this.updateActiveDot(0, visibleSlides - 1) // Update indicators for the first set of visible slides
+			this.goToSlide(0)
+			this.updateActiveDot(0, visibleSlides - 1)
 		} else {
-			this.scrollSlides(1) // Move to the next set of slides
+			this.scrollSlides(1)
 		}
-	
-		this.handleHeight() // Adjust the height after moving to the next slide
+
+		this.handleHeight() // Ensure recalculation after sliding
+	}
+
+	/**
+	 * Handles user interaction and stops autoplay if necessary.
+	 */
+	handleUserInteraction() {
+		if (this.options.autoplayStopOnInteraction && !this.hasUserInteracted) {
+			this.hasUserInteracted = true
+			this.stopAutoplay() // Stop autoplay on first user interaction
+		}
 	}
 
 	/**
@@ -393,7 +440,7 @@ export class Snapgrab {
 	scrollSlides(direction) {
 		const slideWidth = this.wrapper.children[0]?.offsetWidth || 0
 		const newScrollLeft = this.wrapper.scrollLeft + direction * slideWidth
-	
+    
 		this.wrapper.scrollTo({ left: newScrollLeft, behavior: 'smooth' })
 		this.detectCurrentSlide()
 		this.handleHeight() // Adjust the height after scrolling

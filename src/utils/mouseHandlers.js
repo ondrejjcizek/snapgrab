@@ -48,7 +48,7 @@ export function onMouseMove(e, ref, state) {
 	const x = getEventX(e)
 	preventDefaultTouchEvent(e)
 
-	const walk = (x - state.startX) * 1.5
+	const walk = (x - state.startX) * 3
 	const maxScrollLeft = ref.wrapper.scrollWidth - ref.wrapper.clientWidth
 	let newScrollLeft = state.scrollLeft - walk
 

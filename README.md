@@ -16,7 +16,7 @@
 
 ## Demo
 
-Check out the live demo of Snapgrab in action:
+Check out the live demo of Snapgrab in action:  
 [Snapgrab Demo](https://snapgrab-docs.vercel.app/)
 
 ## Features
@@ -61,9 +61,10 @@ Import and initialize Snapgrab in your JavaScript file:
 ```javascript
 import { Snapgrab } from 'snapgrab'
 
-// Initialize the slider
 const slider = new Snapgrab(document.querySelector('.your-slider-element'), {
-    autoplay: 3000, // Autoplay interval in milliseconds
+    autoplay: 6000,
+    autoplayStopOnInteraction: true,
+    autoheight: true,
     onSlideChange: (currentSlide) => console.log('Slide changed to:', currentSlide),
 })
 slider.init()
@@ -112,6 +113,9 @@ button.is-active {
 
 Snapgrab accepts an optional configuration object. Below are the available options:
 
+-   `autoplay (number)`: Interval in milliseconds for autoplay. If not provided, autoplay is disabled.
+-   `autoplayStopOnInteraction (boolean)`: Whether to stop autoplay on any user interaction.
+-   `autoheight (boolean)`: Dynamically adjusts the slider height based on visible slides.
 -   `onSlideChange (function)`: Callback function triggered when the slide changes. Receives the current slide index as an argument.
 
 ## API
