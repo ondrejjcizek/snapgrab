@@ -110,11 +110,15 @@ export class Snapgrab {
 	init() {
 		this.preventImageDragging()
 		this.updateButtonState()
-		this.handleHeight()
+		if (this.options.autoheight) {
+			this.handleHeight() // Ensure height is adjusted if enabled
+		}
 		this.createDots()
 		this.detectCurrentSlide()
 
-		this.handleHeight() // Ensure height is adjusted
+		if (this.options.autoheight) {
+			this.handleHeight() // Ensure height is adjusted if enabled
+		}
 
 		const slideCount = this.wrapper.children.length
 		if (slideCount > 1) {
@@ -141,7 +145,11 @@ export class Snapgrab {
 		const autoplayFunction = () => {
 			if (!this.hasUserInteracted) { // Check again before each iteration
 				this.handleNextClick()
-				this.handleHeight() // Ensure height is adjusted after each automatic slide change
+
+				// Only adjust height if autoheight is enabled
+				if (this.options.autoheight) {
+					this.handleHeight()
+				}
 			}
 		}
 
