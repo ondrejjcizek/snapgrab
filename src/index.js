@@ -27,7 +27,12 @@ export class Snapgrab {
 		this.startY = 0
 		this.isVerticalScroll = false
 
-		this.options = options
+		 // Set default options
+		 this.options = {
+			autoheight: false, // Default to false
+			...options // Overwrite with user-provided options
+		}
+		
 		this.hasUserInteracted = false // Flag to track user interactions
 
 		this.state = {
@@ -97,7 +102,6 @@ export class Snapgrab {
 		}
 
 		this.wrapper.addEventListener('slideChange', () => {
-			console.log('Slide changed, updating height')
 			this.handleHeight()
 		})
 
@@ -128,6 +132,8 @@ export class Snapgrab {
 			if (this.prev) this.prev.style.display = 'none'
 			if (this.next) this.next.style.display = 'none'
 		}
+
+		this.element.classList.add('is-loaded')
 
 		this.startAutoplay()
 	}
@@ -315,8 +321,10 @@ export class Snapgrab {
 		slides.forEach((slide, index) => {
 			if (index >= currentSlideIndex && index < currentSlideIndex + visibleSlides) {
 				slide.setAttribute('aria-hidden', 'false')
+				slide.setAttribute('aria-current', 'true')
 			} else {
 				slide.setAttribute('aria-hidden', 'true')
+				slide.removeAttribute('aria-current')
 			}
 		})
 	}
@@ -339,8 +347,9 @@ export class Snapgrab {
 	 * Handles the slider height dynamically, recalculating the height based on the current visible slides.
 	 */
 	handleHeight() {
-		if (!this.options.autoheight) return // Check if autoheight is enabled
-		
+		// Early return if autoheight is disabled
+		if (!this.options.autoheight) return
+	
 		const slides = Array.from(this.wrapper.children)
 		if (!slides.length) return
 	
@@ -356,37 +365,11 @@ export class Snapgrab {
 			const isHidden = slide.getAttribute('aria-hidden') === 'true' // Check if the slide is hidden
 	
 			if (!isHidden) { // Only consider slides that are not hidden
-				const paddingTop = parseFloat(slideStyle.paddingTop) || 0
-				const paddingBottom = parseFloat(slideStyle.paddingBottom) || 0
+				let slideHeight = this.calculateSlideHeight(slide) // Use the new function
 	
-				let slideHeight = 0
-	
-				if (slideStyle.display.includes('grid')) {
-					const columns = slideStyle.gridTemplateColumns.split(' ').length
-					const columnHeights = Array(columns).fill(0)
-	
-					Array.from(slide.children).forEach((child, index) => {
-						const childHeight = child.getBoundingClientRect().height
-						columnHeights[index % columns] += childHeight
-					})
-	
-					slideHeight = Math.max(...columnHeights)
-				} else {
-					slideHeight = Array.from(slide.children).reduce((acc, child) => {
-						const childHeight = child.getBoundingClientRect().height
-						const style = window.getComputedStyle(child)
-						const marginTop = parseFloat(style.marginTop) || 0
-						const marginBottom = parseFloat(style.marginBottom) || 0
-						return acc + childHeight + marginTop + marginBottom
-					}, 0)
-	
-					slideHeight += paddingTop + paddingBottom
-	
-					if (slideStyle.display.includes('flex')) {
-						const gap = parseFloat(slideStyle.rowGap) || 0
-						slideHeight += gap * (slide.children.length - 1)
-					}
-				}
+				// Ensure minimum height is respected
+				const minHeight = parseFloat(slideStyle.minHeight) || 0
+				slideHeight = Math.max(slideHeight, minHeight)
 	
 				maxHeight = Math.max(maxHeight, slideHeight)
 			}
@@ -395,11 +378,48 @@ export class Snapgrab {
 		// Update the wrapper height
 		if (maxHeight > 0) {
 			this.wrapper.style.height = `${maxHeight}px`
-			// Force reflow to apply the new height
-			this.wrapper.style.height = `${maxHeight}px`
 		} else {
 			console.warn('Max height calculation failed; check your slide content and layout styles.')
 		}
+	}
+	
+	// Helper function to calculate slide height
+	calculateSlideHeight(slide) {
+		const slideStyle = window.getComputedStyle(slide)
+		const paddingTop = parseFloat(slideStyle.paddingTop) || 0
+		const paddingBottom = parseFloat(slideStyle.paddingBottom) || 0
+		let slideHeight = 0
+	
+		if (slideStyle.display.includes('grid')) {
+			// Calculate height for grid layout
+			const columns = slideStyle.gridTemplateColumns.split(' ').length
+			const columnHeights = Array(columns).fill(0)
+	
+			Array.from(slide.children).forEach((child, index) => {
+				const childHeight = child.getBoundingClientRect().height
+				columnHeights[index % columns] += childHeight
+			})
+	
+			slideHeight = Math.max(...columnHeights)
+		} else {
+			// Calculate height for non-grid layout (e.g., flex or block)
+			slideHeight = Array.from(slide.children).reduce((acc, child) => {
+				const childHeight = child.getBoundingClientRect().height
+				const style = window.getComputedStyle(child)
+				const marginTop = parseFloat(style.marginTop) || 0
+				const marginBottom = parseFloat(style.marginBottom) || 0
+				return acc + childHeight + marginTop + marginBottom
+			}, 0)
+	
+			slideHeight += paddingTop + paddingBottom
+	
+			if (slideStyle.display.includes('flex')) {
+				const gap = parseFloat(slideStyle.rowGap) || 0
+				slideHeight += gap * (slide.children.length - 1)
+			}
+		}
+	
+		return slideHeight
 	}
 
 	/**

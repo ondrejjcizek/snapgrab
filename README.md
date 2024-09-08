@@ -1,11 +1,11 @@
 # Snapgrab
 
-**Snapgrab** is a customizable and lightweight JavaScript slider component that provides an easy way to create dynamic and interactive content sliders on your website.
+Lightweight scroll snap slider with smooth navigation for touch devices, mouse dragging, and trackpad swiping. It includes accessible controls, dynamic height adjustment, and customizable autoplay.
 
 ## Table of Contents
 
--   [Demo](#demo)
 -   [Features](#features)
+-   [Demo](#demo)
 -   [Installation](#installation)
 -   [Usage](#usage)
 -   [Configuring Autoplay](#configuring-autoplay)
@@ -14,18 +14,18 @@
 -   [Contributing](#contributing)
 -   [License](#license)
 
+## Features
+
+-   **Native Scroll Snap:** Provides a smooth, natural scrolling experience on all touch devices.
+-   **Intuitive Controls:** Built-in dots and arrows for easy navigation.
+-   **Dynamic Height Adjustment:** Automatically adapts to the height of visible slides, ensuring seamless transitions.
+-   **Customizable Autoplay:** Set your preferred interval for automatic sliding.
+-   **Have a Unique Requirement?** Open an issue, and we'll explore adding it!
+
 ## Demo
 
 Check out the live demo of Snapgrab in action:  
 [Snapgrab Demo](https://snapgrab-docs.vercel.app/)
-
-## Features
-
--   Autoplay functionality with configurable intervals
--   Responsive design for various screen sizes
--   Easy-to-customize navigation and pagination
--   Supports touch and mouse interactions
--   Dynamic height adjustment based on visible slides
 
 ## Installation
 
@@ -42,17 +42,18 @@ npm install snapgrab
 Add the following HTML structure to your project:
 
 ```html
-<div class="slider" role="region">
-    <div class="slider__wrapper" aria-live="polite" data-ref="wrapper">
-        <div class="slider__slide" aria-hidden="false">Slide 1</div>
-        <div class="slider__slide" aria-hidden="true">Slide 2</div>
-        <div class="slider__slide" aria-hidden="true">Slide 3</div>
-    </div>
+<div class="slider" role="region" id="sliderControls">
+    <ul class="slider__wrapper" aria-live="polite" data-ref="wrapper">
+        <li class="slider__slide" aria-hidden="false" aria-current="true">Slide 1</li>
+        <li class="slider__slide" aria-hidden="true">Slide 2</li>
+        <li class="slider__slide" aria-hidden="true">Slide 3</li>
+        <li class="slider__slide" aria-hidden="true">Slide 4</li>
+    </ul>
     <div class="slider__buttons">
-        <button data-ref="prev"></button>
-        <button data-ref="next"></button>
+        <button data-ref="prev" aria-label="Previous slide" aria-controls="sliderControls"></button>
+        <button data-ref="next" aria-label="Next slide" aria-controls="sliderControls"></button>
     </div>
-    <div class="slider__dots" data-ref="dots"></div>
+    <div class="slider__dots" data-ref="dots" aria-label="Dots"></div>
 </div>
 ```
 
@@ -81,14 +82,13 @@ Add some basic CSS to style the component:
 
     &__wrapper {
         display: flex;
-        justify-content: normal;
         margin-bottom: 24px;
         scroll-behavior: smooth;
         scroll-snap-stop: always;
         scroll-snap-type: x mandatory;
         touch-action: pan-x pan-y;
         overflow: scroll hidden;
-        transition: height 0.6s $easeOutExpo;
+        transition: height 0.4s cubic-bezier(0.19, 1, 0.22, 1);
         scrollbar-width: none;
 
         &::-webkit-scrollbar {
@@ -101,18 +101,31 @@ Add some basic CSS to style the component:
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 24px;
         scroll-snap-align: start;
         scroll-snap-stop: normal;
-        max-width: none;
-        background: wheat;
-        min-height: 400px;
-        min-width: 100%;
-        font-size: 2rem;
-        text-align: center;
+        padding: 24px;
         margin-right: 24px;
+        height: max-content;
+        min-height: 200px;
+        min-width: 100%;
+        font-size: 24px;
+        font-weight: 500;
+        text-align: center;
         user-select: none;
-        transition: transform 0.6s $easeOutExpo;
+        background: #bdc3c7;
+        border-radius: 10px;
+
+        // Layout shift fix
+        &:not(&:first-of-type) {
+            &:not(.is-loaded &) {
+                min-height: 0;
+            }
+        }
+
+        &:nth-child(even) {
+            min-height: 250px;
+            background-color: #95a5a6;
+        }
     }
 
     &__buttons {
@@ -129,33 +142,35 @@ Add some basic CSS to style the component:
             height: 40px;
             width: 40px;
             border-radius: 50%;
-            background-color: var(--color-white);
+            background-color: white;
             cursor: pointer;
-            border: 1px solid var(--color-border);
-            transition: background 0.6s $easeOutExpo;
+            border: 1px solid #eaecf0;
+            transition: background 0.6s cubic-bezier(0.19, 1, 0.22, 1);
             color: rgba(0, 0, 0, 60%);
 
             &:after {
-                transition: color 0.6s $easeOutExpo;
+                content: '';
+                transition: color 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+                font-size: 2rem;
             }
 
             &[data-ref='prev'] {
-                @include icon-after {
-                    content: var(--icon-arrow-left);
-                    font-size: 2.2rem;
+                &:after {
+                    content: '←';
                 }
             }
 
             &[data-ref='next'] {
-                @include icon-after {
-                    content: var(--icon-arrow-right);
-                    font-size: 2.2rem;
+                &:after {
+                    content: '→';
                 }
             }
 
-            @include hover {
-                &:not([disabled]) {
-                    background: var(--color-border);
+            @media (pointer: fine) {
+                &:hover {
+                    &:not([disabled]) {
+                        background: #eaecf0;
+                    }
                 }
             }
 
@@ -185,7 +200,7 @@ Add some basic CSS to style the component:
             border-radius: 50%;
             cursor: pointer;
             background: rgba(0, 0, 0, 42%);
-            transition: background 0.6s $easeOutExpo;
+            transition: background 0.6s cubic-bezier(0.19, 1, 0.22, 1);
 
             &:hover {
                 background: rgba(0, 0, 0, 54%);
@@ -244,7 +259,6 @@ Snapgrab accepts an optional configuration object. Below are the available optio
 -   `autoplay (number)`: Interval in milliseconds for autoplay. If not provided, autoplay is disabled.
 -   `autoplayStopOnInteraction (boolean)`: Whether to stop autoplay on any user interaction.
 -   `autoheight (boolean)`: Dynamically adjusts the slider height based on visible slides.
--   `onSlideChange (function)`: Callback function triggered when the slide changes. Receives the current slide index as an argument.
 
 ## API
 
