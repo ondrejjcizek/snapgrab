@@ -42,15 +42,17 @@ npm install snapgrab
 Add the following HTML structure to your project:
 
 ```html
-<div id="snapgrab">
-    <div data-ref="wrapper">
-        <div class="slide">Slide 1</div>
-        <div class="slide">Slide 2</div>
-        <div class="slide">Slide 3</div>
+<div class="slider" role="region">
+    <div class="slider__wrapper" aria-live="polite" data-ref="wrapper">
+        <div class="slider__slide" aria-hidden="false">Slide 1</div>
+        <div class="slider__slide" aria-hidden="true">Slide 2</div>
+        <div class="slider__slide" aria-hidden="true">Slide 3</div>
     </div>
-    <button data-ref="prev">Previous</button>
-    <button data-ref="next">Next</button>
-    <div data-ref="dots"></div>
+    <div class="slider__buttons">
+        <button data-ref="prev"></button>
+        <button data-ref="next"></button>
+    </div>
+    <div class="slider__dots" data-ref="dots"></div>
 </div>
 ```
 
@@ -61,11 +63,10 @@ Import and initialize Snapgrab in your JavaScript file:
 ```javascript
 import { Snapgrab } from 'snapgrab'
 
-const slider = new Snapgrab(document.querySelector('.your-slider-element'), {
+const slider = new Snapgrab(document.querySelector('.slider'), {
     autoplay: 6000,
     autoplayStopOnInteraction: true,
     autoheight: true,
-    onSlideChange: (currentSlide) => console.log('Slide changed to:', currentSlide),
 })
 slider.init()
 ```
@@ -75,37 +76,164 @@ slider.init()
 Add some basic CSS to style the component:
 
 ```css
-#snapgrab {
-    overflow: hidden;
+.slider {
     position: relative;
-}
 
-[data-ref='wrapper'] {
-    display: flex;
-    scroll-snap-type: x mandatory;
-    overflow-x: scroll;
-}
+    &__wrapper {
+        display: flex;
+        justify-content: normal;
+        margin-bottom: 24px;
+        scroll-behavior: smooth;
+        scroll-snap-stop: always;
+        scroll-snap-type: x mandatory;
+        touch-action: pan-x pan-y;
+        overflow: scroll hidden;
+        transition: height 0.6s $easeOutExpo;
+        scrollbar-width: none;
 
-.slide {
-    min-width: 100%;
-    scroll-snap-align: start;
-}
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
 
-[data-ref='dots'] {
-    display: flex;
-    justify-content: center;
-}
+    &__slide {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 24px;
+        scroll-snap-align: start;
+        scroll-snap-stop: normal;
+        max-width: none;
+        background: wheat;
+        min-height: 400px;
+        min-width: 100%;
+        font-size: 2rem;
+        text-align: center;
+        margin-right: 24px;
+        user-select: none;
+        transition: transform 0.6s $easeOutExpo;
+    }
 
-[data-ref='dots'] button {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin: 0 5px;
-    background-color: gray;
-}
+    &__buttons {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 32px;
+        position: absolute;
+        right: 0;
+        bottom: -48px;
 
-button.is-active {
-    background-color: black;
+        button {
+            display: block;
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            background-color: var(--color-white);
+            cursor: pointer;
+            border: 1px solid var(--color-border);
+            transition: background 0.6s $easeOutExpo;
+            color: rgba(0, 0, 0, 60%);
+
+            &:after {
+                transition: color 0.6s $easeOutExpo;
+            }
+
+            &[data-ref='prev'] {
+                @include icon-after {
+                    content: var(--icon-arrow-left);
+                    font-size: 2.2rem;
+                }
+            }
+
+            &[data-ref='next'] {
+                @include icon-after {
+                    content: var(--icon-arrow-right);
+                    font-size: 2.2rem;
+                }
+            }
+
+            @include hover {
+                &:not([disabled]) {
+                    background: var(--color-border);
+                }
+            }
+
+            &[disabled] {
+                cursor: default;
+
+                &:after,
+                &:before {
+                    color: rgba(0, 0, 0, 10%);
+                }
+            }
+        }
+    }
+
+    &__dots {
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%);
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+
+        button {
+            display: block;
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 42%);
+            transition: background 0.6s $easeOutExpo;
+
+            &:hover {
+                background: rgba(0, 0, 0, 54%);
+            }
+
+            &.is-active {
+                background: rgba(0, 0, 0, 80%);
+            }
+        }
+    }
+
+    .no-more-right {
+        animation: shake 0.5s ease;
+    }
+
+    .no-more-left {
+        animation: shake-left 0.5s ease;
+    }
+
+    @keyframes shake {
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-5px);
+        }
+
+        75% {
+            transform: translateX(5px);
+        }
+    }
+
+    @keyframes shake-left {
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(5px);
+        }
+
+        75% {
+            transform: translateX(-5px);
+        }
+    }
 }
 ```
 
