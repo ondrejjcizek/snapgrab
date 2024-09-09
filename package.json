@@ -5,13 +5,18 @@
     "author": "Ondrej Cizek",
     "license": "MIT",
     "type": "module",
-    "main": "./snapgrab.mjs",
-    "module": "./snapgrab.mjs",
     "exports": {
         ".": {
-            "default": "./snapgrab.mjs"
+            "import": "./dist/Snapgrab.es.js",
+            "require": "./dist/Snapgrab.cjs.js"
         }
     },
+    "main": "dist/Snapgrab.cjs.js",
+    "module": "dist/Snapgrab.es.js",
+    "browser": "dist/Snapgrab.umd.js",
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "dev": "vite",
         "build": "vite build",
@@ -27,6 +32,31 @@
         "url": "https://github.com/ondrejjcizek/snapgrab/issues"
     },
     "homepage": "https://github.com/ondrejjcizek/snapgrab#readme",
+    "keywords": [
+        "slider",
+        "touch-slider",
+        "drag-slider",
+        "autoplay-slider",
+        "responsive-carousel",
+        "swipe-slider",
+        "mouse-scroll",
+        "touch-scroll",
+        "js-slider",
+        "vanilla-js-slider",
+        "custom-carousel",
+        "scroll-detection",
+        "dynamic-height",
+        "autoplay",
+        "drag-and-drop",
+        "scroll-snap",
+        "snap-scrolling",
+        "scroll-carousel",
+        "infinite-scroll",
+        "gesture-support",
+        "lightweight-slider",
+        "zero-dependency",
+        "smooth-scroll"
+    ],
     "devDependencies": {
         "@semantic-release/git": "^10.0.1",
         "@semantic-release/github": "^10.1.7",
