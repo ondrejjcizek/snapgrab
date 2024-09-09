@@ -2,18 +2,16 @@
     "name": "snapgrab",
     "description": "Snapgrab is a customizable scroll snapping component for web applications.",
     "version": "1.4.5",
+    "author": "Ondrej Cizek",
+    "license": "MIT",
+    "type": "module",
+    "main": "./snapgrab.mjs",
+    "module": "./snapgrab.mjs",
     "exports": {
         ".": {
-            "import": "./dist/Snapgrab.es.js",
-            "require": "./dist/Snapgrab.cjs.js"
+            "default": "./snapgrab.mjs"
         }
     },
-    "main": "dist/Snapgrab.cjs.js",
-    "module": "dist/Snapgrab.es.js",
-    "browser": "dist/Snapgrab.umd.js",
-    "files": [
-        "dist"
-    ],
     "scripts": {
         "dev": "vite",
         "build": "vite build",
@@ -25,8 +23,6 @@
         "type": "git",
         "url": "https://github.com/ondrejjcizek/snapgrab.git"
     },
-    "author": "Ondrej Cizek",
-    "license": "MIT",
     "bugs": {
         "url": "https://github.com/ondrejjcizek/snapgrab/issues"
     },

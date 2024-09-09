@@ -5,8 +5,8 @@ export default defineConfig({
     lib: {
       entry: 'src/index.js',
       name: 'Snapgrab',
-      fileName: (format) => `Snapgrab.${format}.js`,
-      formats: ['es', 'cjs', 'umd'],
+      fileName: (format) => `snapgrab.mjs`,
+      formats: ['cjs'],
     },
     rollupOptions: {
       external: [],
