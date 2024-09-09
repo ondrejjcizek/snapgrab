@@ -7,7 +7,7 @@
     "type": "module",
     "exports": {
         ".": {
-            "import": "./dist/snapgrab.es.js",
+            "import": "./dist/snapgrab.cjs.js",
             "require": "./dist/snapgrab.cjs.js"
         }
     },
