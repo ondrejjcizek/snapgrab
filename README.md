@@ -4,6 +4,8 @@ Lightweight scroll snap slider with smooth navigation for touch devices, mouse d
 
 ## Table of Contents
 
+-   [Methods](#methods)
+
 -   [Features](#features)
 -   [Demo](#demo)
 -   [Installation](#installation)
@@ -266,6 +268,19 @@ Snapgrab accepts an optional configuration object. Below are the available optio
 -   `destroy()`: Unbinds event listeners and cleans up the component.
 -   `goToSlide(index)`: Scrolls to a specific slide by its index.
 -   `updateButtonState()`: Updates the state of the navigation buttons based on the current scroll position.
+
+## Methods
+
+### `handleHeight()`
+
+The `handleHeight()` method dynamically recalculates and adjusts the height of the slider based on the current visible slides. This method can be called again if needed to ensure the height is updated correctly. For instance, you may want to call `handleHeight()` after a specific event like a window resize, a slide change, or any dynamic content update that affects the height of the slider.
+
+#### Example
+
+```javascript
+// Assuming `slider` is an instance of Snapgrab
+slider.handleHeight() // Call this method to adjust the height manually
+```
 
 ## Events
 
