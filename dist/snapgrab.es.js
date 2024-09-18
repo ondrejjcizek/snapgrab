@@ -26,9 +26,9 @@ function S(s, t, e) {
   if (e.isDragging) {
     const r = p(s);
     f(s);
-    const o = (r - e.startX) * 3, a = t.wrapper.scrollWidth - t.wrapper.clientWidth;
-    let h = e.scrollLeft - o;
-    h = w(h, 0, a), t.wrapper.scrollLeft = h, m(t, o);
+    const a = (r - e.startX) * 3, o = t.wrapper.scrollWidth - t.wrapper.clientWidth;
+    let h = e.scrollLeft - a;
+    h = w(h, 0, o), t.wrapper.scrollLeft = h, m(t, a);
     return;
   }
   Math.abs(p(s) - (e.startX + t.wrapper.offsetLeft)) > 10 && !e.hasMoved && (e.isDragging = !0, u(t, e, !0), e.hasMoved = !0);
@@ -203,8 +203,8 @@ class b {
       */
   updateAriaHidden() {
     const t = Array.from(this.wrapper.children), e = t[0].offsetWidth, i = Math.floor(this.wrapper.offsetWidth / e), r = this.state.currentSlide;
-    t.forEach((o, a) => {
-      a >= r && a < r + i ? (o.setAttribute("aria-hidden", "false"), o.setAttribute("aria-current", "true")) : (o.setAttribute("aria-hidden", "true"), o.removeAttribute("aria-current"));
+    t.forEach((a, o) => {
+      o >= r && o < r + i ? (a.setAttribute("aria-hidden", "false"), a.setAttribute("aria-current", "true")) : (a.setAttribute("aria-hidden", "true"), a.removeAttribute("aria-current"));
     });
   }
   /**
@@ -228,30 +228,30 @@ class b {
     }), t.forEach((i) => {
       const r = window.getComputedStyle(i);
       if (!(i.getAttribute("aria-hidden") === "true")) {
-        let a = this.calculateSlideHeight(i);
+        let o = this.calculateSlideHeight(i);
         const h = parseFloat(r.minHeight) || 0;
-        a = Math.max(a, h), e = Math.max(e, a);
+        o = Math.max(o, h), e = Math.max(e, o);
       }
     }), e > 0 ? this.wrapper.style.height = `${e}px` : console.warn("Max height calculation failed; check your slide content and layout styles.");
   }
   // Helper function to calculate slide height
   calculateSlideHeight(t) {
     const e = window.getComputedStyle(t), i = parseFloat(e.paddingTop) || 0, r = parseFloat(e.paddingBottom) || 0;
-    let o = 0;
+    let a = 0;
     if (e.display.includes("grid")) {
-      const a = e.gridTemplateColumns.split(" ").length, h = Array(a).fill(0);
+      const o = e.gridTemplateColumns.split(" ").length, h = Array(o).fill(0);
       Array.from(t.children).forEach((n, l) => {
         const d = n.getBoundingClientRect().height;
-        h[l % a] += d;
-      }), o = Math.max(...h);
-    } else if (o = Array.from(t.children).reduce((a, h) => {
+        h[l % o] += d;
+      }), a = Math.max(...h);
+    } else if (a = Array.from(t.children).reduce((o, h) => {
       const n = h.getBoundingClientRect().height, l = window.getComputedStyle(h), d = parseFloat(l.marginTop) || 0, g = parseFloat(l.marginBottom) || 0;
-      return a + n + d + g;
-    }, 0), o += i + r, e.display.includes("flex")) {
-      const a = parseFloat(e.rowGap) || 0;
-      o += a * (t.children.length - 1);
+      return o + n + d + g;
+    }, 0), a += i + r, e.display.includes("flex")) {
+      const o = parseFloat(e.rowGap) || 0;
+      a += o * (t.children.length - 1);
     }
-    return o;
+    return a;
   }
   /**
       * Handles the click event for the previous button.
@@ -263,9 +263,8 @@ class b {
       * Handles the click event for the next button.
       */
   handleNextClick() {
-    this.handleUserInteraction();
     const t = this.wrapper.children.length, e = this.wrapper.children[0].offsetWidth || 0, i = Math.floor(this.wrapper.offsetWidth / e), r = (t - i) * e;
-    this.wrapper.scrollLeft >= r ? (this.goToSlide(0), this.updateActiveDot(0, i - 1)) : this.scrollSlides(1), this.handleHeight();
+    this.wrapper.scrollLeft >= r ? (this.goToSlide(0), this.updateActiveDot(0, i - 1)) : this.scrollSlides(1), this.updateButtonState(), this.handleHeight();
   }
   /**
    * Handles user interaction and stops autoplay if necessary.
@@ -298,23 +297,32 @@ class b {
       * Updates the state of navigation buttons.
       */
   updateButtonState() {
-    var o;
-    const t = ((o = this.wrapper.children[0]) == null ? void 0 : o.offsetWidth) || 0, e = Math.floor(this.wrapper.offsetWidth / t), r = (this.wrapper.children.length - e) * t;
-    this.prev && this.prev.toggleAttribute("disabled", this.wrapper.scrollLeft <= 0), this.next && this.next.toggleAttribute("disabled", this.wrapper.scrollLeft >= r);
+    var i;
+    const t = ((i = this.wrapper.children[0]) == null ? void 0 : i.offsetWidth) || 0;
+    Math.floor(this.wrapper.offsetWidth / t), this.wrapper.children.length;
+    const e = this.wrapper.scrollWidth - this.wrapper.clientWidth;
+    if (this.prev) {
+      const r = this.wrapper.scrollLeft <= 0;
+      this.prev.toggleAttribute("disabled", r);
+    }
+    if (this.next) {
+      const r = this.wrapper.scrollLeft >= e;
+      this.next.toggleAttribute("disabled", r);
+    }
   }
   /**
       * Creates navigation dots for the slider.
       */
   createDots() {
-    var o;
+    var a;
     if (!this.dots) return;
     const t = this.wrapper.children.length;
     this.dots.innerHTML = "";
-    for (let a = 0; a < t; a++) {
+    for (let o = 0; o < t; o++) {
       const h = document.createElement("button");
-      h.className = "dot", h.addEventListener("click", () => this.goToSlide(a)), this.dots.appendChild(h);
+      h.className = "dot", h.addEventListener("click", () => this.goToSlide(o)), this.dots.appendChild(h);
     }
-    const e = ((o = this.wrapper.children[0]) == null ? void 0 : o.offsetWidth) || 0, i = parseFloat(window.getComputedStyle(this.wrapper).gap) || 0, r = Math.floor(this.wrapper.offsetWidth / (e + i));
+    const e = ((a = this.wrapper.children[0]) == null ? void 0 : a.offsetWidth) || 0, i = parseFloat(window.getComputedStyle(this.wrapper).gap) || 0, r = Math.floor(this.wrapper.offsetWidth / (e + i));
     this.state.visibleSlides = r, this.updateActiveDot(0, r - 1);
   }
   /**
@@ -324,10 +332,10 @@ class b {
       */
   updateActiveDot(t, e) {
     if (!this.dots) return;
-    const i = this.dots.querySelectorAll("button"), r = i.length, o = this.state.visibleSlides;
-    i.forEach((a, h) => {
+    const i = this.dots.querySelectorAll("button"), r = i.length, a = this.state.visibleSlides;
+    i.forEach((o, h) => {
       let n = h >= t && h <= e;
-      e >= r - 1 && (n = h >= r - o), a.classList.toggle("is-active", n);
+      e >= r - 1 && (n = h >= r - a), o.classList.toggle("is-active", n);
     });
   }
   /**
