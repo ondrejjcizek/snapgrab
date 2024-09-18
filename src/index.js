@@ -426,16 +426,16 @@ export class Snapgrab {
      * Handles the click event for the previous button.
      */
 	handlePrevClick() {
-		this.handleUserInteraction() // Check and handle user interaction
+		this.handleUserInteraction()
 		this.scrollSlides(-1)
-		this.handleHeight() // Ensure recalculation after sliding
+		this.handleHeight()
 	}
 
 	/**
      * Handles the click event for the next button.
      */
+	
 	handleNextClick() {
-		this.handleUserInteraction() // Check and handle user interaction
 		const totalSlides = this.wrapper.children.length
 		const slideWidth = this.wrapper.children[0].offsetWidth || 0
 		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth)
@@ -448,7 +448,8 @@ export class Snapgrab {
 			this.scrollSlides(1)
 		}
 
-		this.handleHeight() // Ensure recalculation after sliding
+		this.updateButtonState()
+		this.handleHeight()
 	}
 
 	/**
@@ -495,14 +496,17 @@ export class Snapgrab {
 		const slideWidth = this.wrapper.children[0]?.offsetWidth || 0
 		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth)
 		const totalSlides = this.wrapper.children.length
-		const maxScrollLeft = (totalSlides - visibleSlides) * slideWidth
+		const maxScrollLeft = this.wrapper.scrollWidth - this.wrapper.clientWidth
 
+	
 		if (this.prev) {
-			this.prev.toggleAttribute('disabled', this.wrapper.scrollLeft <= 0)
+			const prevDisabled = this.wrapper.scrollLeft <= 0
+			this.prev.toggleAttribute('disabled', prevDisabled)
 		}
-
+	
 		if (this.next) {
-			this.next.toggleAttribute('disabled', this.wrapper.scrollLeft >= maxScrollLeft)
+			const nextDisabled = this.wrapper.scrollLeft >= maxScrollLeft
+			this.next.toggleAttribute('disabled', nextDisabled)
 		}
 	}
 
