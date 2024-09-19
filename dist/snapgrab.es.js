@@ -14,10 +14,10 @@ function m(s, t) {
   const e = s.wrapper.scrollWidth - s.wrapper.clientWidth;
   s.wrapper.scrollLeft <= 0 && t > 0 ? c(s.wrapper, "no-more-left") : s.wrapper.scrollLeft >= e && t < 0 && c(s.wrapper, "no-more-right");
 }
-function w(s, t, e) {
+function v(s, t, e) {
   return Math.max(t, Math.min(s, e));
 }
-function v(s, t, e) {
+function w(s, t, e) {
   const i = p(s);
   e.startX = i - t.wrapper.offsetLeft, e.scrollLeft = t.wrapper.scrollLeft, e.hasMoved = !1, e.isMouseDown = !0, f(s);
 }
@@ -26,9 +26,9 @@ function S(s, t, e) {
   if (e.isDragging) {
     const r = p(s);
     f(s);
-    const a = (r - e.startX) * 3, o = t.wrapper.scrollWidth - t.wrapper.clientWidth;
-    let h = e.scrollLeft - a;
-    h = w(h, 0, o), t.wrapper.scrollLeft = h, m(t, a);
+    const h = (r - e.startX) * 3, o = t.wrapper.scrollWidth - t.wrapper.clientWidth;
+    let a = e.scrollLeft - h;
+    a = v(a, 0, o), t.wrapper.scrollLeft = a, m(t, h);
     return;
   }
   Math.abs(p(s) - (e.startX + t.wrapper.offsetLeft)) > 10 && !e.hasMoved && (e.isDragging = !0, u(t, e, !0), e.hasMoved = !0);
@@ -55,7 +55,7 @@ function M(s, t, e) {
     this.timeoutId && clearTimeout(this.timeoutId), this.timeoutId = null, this.isPaused = !1, this.startTimestamp = null, this.remaining = this.delay;
   }, this.start();
 }
-class b {
+class E {
   /**
       * Creates a new Snapgrab slider instance.
       * @param {HTMLElement} element - The DOM element to attach the slider to.
@@ -162,7 +162,7 @@ class b {
       * @param {MouseEvent} e - The mouse event.
       */
   handleMouseDown(t) {
-    this.wrapper.children.length > 1 && (v(t, this, this.state), this.isScrolling = !1, this.wrapper.style.cursor = "grabbing", this.handleUserInteraction());
+    this.wrapper.children.length > 1 && (w(t, this, this.state), this.isScrolling = !1, this.wrapper.style.cursor = "grabbing", this.handleUserInteraction());
   }
   /**
       * Handles mouse up event.
@@ -203,8 +203,8 @@ class b {
       */
   updateAriaHidden() {
     const t = Array.from(this.wrapper.children), e = t[0].offsetWidth, i = Math.floor(this.wrapper.offsetWidth / e), r = this.state.currentSlide;
-    t.forEach((a, o) => {
-      o >= r && o < r + i ? (a.setAttribute("aria-hidden", "false"), a.setAttribute("aria-current", "true")) : (a.setAttribute("aria-hidden", "true"), a.removeAttribute("aria-current"));
+    t.forEach((h, o) => {
+      o >= r && o < r + i ? (h.setAttribute("aria-hidden", "false"), h.setAttribute("aria-current", "true")) : (h.setAttribute("aria-hidden", "true"), h.removeAttribute("aria-current"));
     });
   }
   /**
@@ -229,29 +229,29 @@ class b {
       const r = window.getComputedStyle(i);
       if (!(i.getAttribute("aria-hidden") === "true")) {
         let o = this.calculateSlideHeight(i);
-        const h = parseFloat(r.minHeight) || 0;
-        o = Math.max(o, h), e = Math.max(e, o);
+        const a = parseFloat(r.minHeight) || 0;
+        o = Math.max(o, a), e = Math.max(e, o);
       }
     }), e > 0 ? this.wrapper.style.height = `${e}px` : console.warn("Max height calculation failed; check your slide content and layout styles.");
   }
   // Helper function to calculate slide height
   calculateSlideHeight(t) {
     const e = window.getComputedStyle(t), i = parseFloat(e.paddingTop) || 0, r = parseFloat(e.paddingBottom) || 0;
-    let a = 0;
+    let h = 0;
     if (e.display.includes("grid")) {
-      const o = e.gridTemplateColumns.split(" ").length, h = Array(o).fill(0);
+      const o = e.gridTemplateColumns.split(" ").length, a = Array(o).fill(0);
       Array.from(t.children).forEach((n, l) => {
         const d = n.getBoundingClientRect().height;
-        h[l % o] += d;
-      }), a = Math.max(...h);
-    } else if (a = Array.from(t.children).reduce((o, h) => {
-      const n = h.getBoundingClientRect().height, l = window.getComputedStyle(h), d = parseFloat(l.marginTop) || 0, g = parseFloat(l.marginBottom) || 0;
+        a[l % o] += d;
+      }), h = Math.max(...a);
+    } else if (h = Array.from(t.children).reduce((o, a) => {
+      const n = a.getBoundingClientRect().height, l = window.getComputedStyle(a), d = parseFloat(l.marginTop) || 0, g = parseFloat(l.marginBottom) || 0;
       return o + n + d + g;
-    }, 0), a += i + r, e.display.includes("flex")) {
+    }, 0), h += i + r, e.display.includes("flex")) {
       const o = parseFloat(e.rowGap) || 0;
-      a += o * (t.children.length - 1);
+      h += o * (t.children.length - 1);
     }
-    return a;
+    return h;
   }
   /**
       * Handles the click event for the previous button.
@@ -314,15 +314,15 @@ class b {
       * Creates navigation dots for the slider.
       */
   createDots() {
-    var a;
+    var h;
     if (!this.dots) return;
     const t = this.wrapper.children.length;
     this.dots.innerHTML = "";
     for (let o = 0; o < t; o++) {
-      const h = document.createElement("button");
-      h.className = "dot", h.addEventListener("click", () => this.goToSlide(o)), this.dots.appendChild(h);
+      const a = document.createElement("button");
+      a.className = "dot", a.addEventListener("click", () => this.goToSlide(o)), this.dots.appendChild(a);
     }
-    const e = ((a = this.wrapper.children[0]) == null ? void 0 : a.offsetWidth) || 0, i = parseFloat(window.getComputedStyle(this.wrapper).gap) || 0, r = Math.floor(this.wrapper.offsetWidth / (e + i));
+    const e = ((h = this.wrapper.children[0]) == null ? void 0 : h.offsetWidth) || 0, i = parseFloat(window.getComputedStyle(this.wrapper).gap) || 0, r = Math.floor(this.wrapper.offsetWidth / (e + i));
     this.state.visibleSlides = r, this.updateActiveDot(0, r - 1);
   }
   /**
@@ -332,10 +332,10 @@ class b {
       */
   updateActiveDot(t, e) {
     if (!this.dots) return;
-    const i = this.dots.querySelectorAll("button"), r = i.length, a = this.state.visibleSlides;
-    i.forEach((o, h) => {
-      let n = h >= t && h <= e;
-      e >= r - 1 && (n = h >= r - a), o.classList.toggle("is-active", n);
+    const i = this.dots.querySelectorAll("button"), r = i.length, h = this.state.visibleSlides;
+    i.forEach((o, a) => {
+      let n = a >= t && a <= e;
+      e >= r - 1 && (n = a >= r - h), o.classList.toggle("is-active", n);
     });
   }
   /**
@@ -352,9 +352,9 @@ class b {
       * Destroys the slider and removes event listeners.
       */
   destroy() {
-    this.wrapper.removeEventListener("mousedown", this.onMouseDown), this.wrapper.removeEventListener("mousemove", this.onMouseMove), this.wrapper.removeEventListener("mouseup", this.onMouseUp), this.wrapper.removeEventListener("mouseleave", this.onMouseLeave), this.wrapper.removeEventListener("scroll", this.onScroll);
+    this.wrapper.removeEventListener("mousedown", this.onMouseDown), this.wrapper.removeEventListener("mousemove", this.onMouseMove), this.wrapper.removeEventListener("mouseup", this.onMouseUp), this.wrapper.removeEventListener("mouseleave", this.onMouseLeave), this.wrapper.removeEventListener("scroll", this.onScroll), this.wrapper.removeEventListener("touchstart", this.onTouchStart), this.wrapper.removeEventListener("touchmove", this.onTouchMove), this.wrapper.removeEventListener("touchend", this.onTouchEnd), this.prev && this.prev.removeEventListener("click", this.handlePrevClick), this.next && this.next.removeEventListener("click", this.handleNextClick), window.removeEventListener("resize", this.handleHeight), this.autoplay && (this.autoplay.destroy(), this.autoplay = null), this.wrapper.style.cursor = "", this.element.classList.remove("is-loaded"), this.dots && (this.dots.innerHTML = ""), this.wrapper.dispatchEvent(new CustomEvent("destroy"));
   }
 }
 export {
-  b as Snapgrab
+  E as Snapgrab
 };

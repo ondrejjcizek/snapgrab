@@ -497,7 +497,6 @@ export class Snapgrab {
 		const visibleSlides = Math.floor(this.wrapper.offsetWidth / slideWidth)
 		const totalSlides = this.wrapper.children.length
 		const maxScrollLeft = this.wrapper.scrollWidth - this.wrapper.clientWidth
-
 	
 		if (this.prev) {
 			const prevDisabled = this.wrapper.scrollLeft <= 0
@@ -579,10 +578,48 @@ export class Snapgrab {
      * Destroys the slider and removes event listeners.
      */
 	destroy() {
+		// Remove event listeners for mouse interactions
 		this.wrapper.removeEventListener('mousedown', this.onMouseDown)
 		this.wrapper.removeEventListener('mousemove', this.onMouseMove)
 		this.wrapper.removeEventListener('mouseup', this.onMouseUp)
 		this.wrapper.removeEventListener('mouseleave', this.onMouseLeave)
 		this.wrapper.removeEventListener('scroll', this.onScroll)
-	}
+	
+		// Remove event listeners for touch interactions
+		this.wrapper.removeEventListener('touchstart', this.onTouchStart)
+		this.wrapper.removeEventListener('touchmove', this.onTouchMove)
+		this.wrapper.removeEventListener('touchend', this.onTouchEnd)
+	
+		// Remove event listeners for navigation buttons (if they exist)
+		if (this.prev) {
+			this.prev.removeEventListener('click', this.handlePrevClick)
+		}
+		if (this.next) {
+			this.next.removeEventListener('click', this.handleNextClick)
+		}
+	
+		// Remove resize event listener
+		window.removeEventListener('resize', this.handleHeight)
+	
+		// Remove autoplay if it exists
+		if (this.autoplay) {
+			this.autoplay.destroy()
+			this.autoplay = null
+		}
+	
+		// Reset cursor style set during interaction
+		this.wrapper.style.cursor = ''
+	
+		// Optionally, remove DOM changes like classes or reset styles if needed
+		this.element.classList.remove('is-loaded')
+		
+		// Remove any dots that were created for navigation
+		if (this.dots) {
+			this.dots.innerHTML = ''
+		}
+	
+		// Clear any other custom event listeners or timeouts if needed
+		this.wrapper.dispatchEvent(new CustomEvent('destroy')) // Custom event to notify the slider was destroyed
+	}	
 }
+
