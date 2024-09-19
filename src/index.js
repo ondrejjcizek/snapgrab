@@ -578,48 +578,60 @@ export class Snapgrab {
      * Destroys the slider and removes event listeners.
      */
 	destroy() {
-		// Remove event listeners for mouse interactions
-		this.wrapper.removeEventListener('mousedown', this.onMouseDown)
-		this.wrapper.removeEventListener('mousemove', this.onMouseMove)
-		this.wrapper.removeEventListener('mouseup', this.onMouseUp)
-		this.wrapper.removeEventListener('mouseleave', this.onMouseLeave)
-		this.wrapper.removeEventListener('scroll', this.onScroll)
+		// Remove mouse event listeners
+		this.wrapper.removeEventListener('mousedown', this.onMouseDown) // Correct reference
+		this.wrapper.removeEventListener('mousemove', this.onMouseMove) // Correct reference
+		this.wrapper.removeEventListener('mouseup', this.onMouseUp)     // Correct reference
+		this.wrapper.removeEventListener('mouseleave', this.onMouseLeave) // Correct reference
+		this.wrapper.removeEventListener('scroll', this.onScroll)        // Correct reference for debounced scroll handler
 	
-		// Remove event listeners for touch interactions
-		this.wrapper.removeEventListener('touchstart', this.onTouchStart)
-		this.wrapper.removeEventListener('touchmove', this.onTouchMove)
-		this.wrapper.removeEventListener('touchend', this.onTouchEnd)
+		// Remove touch event listeners
+		this.wrapper.removeEventListener('touchstart', this.onTouchStart) // Correct reference
+		this.wrapper.removeEventListener('touchmove', this.onTouchMove)   // Correct reference
+		this.wrapper.removeEventListener('touchend', this.onTouchEnd)     // Correct reference
 	
-		// Remove event listeners for navigation buttons (if they exist)
+		// Remove event listeners for navigation buttons
 		if (this.prev) {
-			this.prev.removeEventListener('click', this.handlePrevClick)
+			this.prev.removeEventListener('click', this.handlePrevClick) // Correct reference
 		}
 		if (this.next) {
-			this.next.removeEventListener('click', this.handleNextClick)
+			this.next.removeEventListener('click', this.handleNextClick) // Correct reference
 		}
 	
-		// Remove resize event listener
-		window.removeEventListener('resize', this.handleHeight)
+		// Remove window resize listener
+		window.removeEventListener('resize', this.handleHeight) // Correct reference
 	
-		// Remove autoplay if it exists
+		// Stop autoplay if it exists and clean it up
 		if (this.autoplay) {
-			this.autoplay.destroy()
-			this.autoplay = null
+			this.autoplay.destroy() // Ensure autoplay is stopped
+			this.autoplay = null // Set it to null to avoid memory leaks
 		}
 	
-		// Reset cursor style set during interaction
-		this.wrapper.style.cursor = ''
+		// Reset any DOM styles that were changed
+		this.wrapper.style.cursor = '' // Reset the 'grabbing' cursor or any other styles
 	
-		// Optionally, remove DOM changes like classes or reset styles if needed
+		// Remove any dynamically added classes
 		this.element.classList.remove('is-loaded')
-		
-		// Remove any dots that were created for navigation
+	
+		// Clean up dots navigation if it exists
 		if (this.dots) {
-			this.dots.innerHTML = ''
+			this.dots.innerHTML = '' // Remove dots from DOM
 		}
 	
-		// Clear any other custom event listeners or timeouts if needed
-		this.wrapper.dispatchEvent(new CustomEvent('destroy')) // Custom event to notify the slider was destroyed
+		// Dispatch a custom event to signal that the slider is destroyed
+		this.wrapper.dispatchEvent(new CustomEvent('destroy'))
+	
+		// Nullify all important references to avoid memory leaks
+		this.element = null
+		this.wrapper = null
+		this.dots = null
+		this.prev = null
+		this.next = null
+		this.isDragging = false
+		this.isScrolling = false
+		this.startX = 0
+		this.scrollLeft = 0
+		this.startY = 0
+		this.isVerticalScroll = false
 	}	
 }
-
